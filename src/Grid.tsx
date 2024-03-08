@@ -110,13 +110,23 @@ const NeoGrid = (): JSX.Element => {
 
   return (
     <div className="ag-theme-alpine" style={{ height: 900, width: 1920 }}>
-      <div>
-        <h1>Near-Earth Object Overview</h1>
+      <div style={{display: "flex", flexDirection: 'column', marginBottom: 10}}>
+        <div>
+          <h1>Near-Earth Object Overview</h1>
+        </div>
       </div>
       <AgGridReact
         rowData={data}
         columnDefs={columnDefs}
         rowGroupPanelShow={'always'}
+        enableRangeSelection={true}
+        
+        gridOptions={{
+          rowSelection: 'multiple',
+          enableFillHandle: true,
+          enableRangeSelection: true,
+         
+        }}
       />
     </div>
   );
