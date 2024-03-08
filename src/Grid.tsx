@@ -1,15 +1,19 @@
+// eslint-disable-next-line
 import { AgGridReact } from "ag-grid-react";
 import { ColDef } from "ag-grid-community";
 import data from "./near-earth-asteroids.json";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 
 
-const numCompartor = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => parseFloat(valueA) - parseFloat(valueB)
+const numCompartor = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
+   return parseFloat(valueA) - parseFloat(valueB)
+}
+
 const letterComparator = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
-  if (valueA == valueB) return 0;
+  if (valueA === valueB) return 0;
   return (valueA > valueB) ? 1 : -1;
 }
 
@@ -36,9 +40,9 @@ function formatDate(date: string) {
 
 var nicerData = data;
 
-// for (let i = 0; i < data.length; i++) {
-//   nicerData[i].discovery_date = formatDate(data[i].discovery_date)
-// }
+      // for (let i = 0; i < data.length; i++) {
+      //   nicerData[i].discovery_date = formatDate(data[i].discovery_date)
+      // }
 
 
 
@@ -78,37 +82,26 @@ function monthToComparableNumber(date: string) {
 }
 
 
-// const columnDefs: ColDef[] = [
-//   { field: "designation", headerName: "Designation",
-//   comparator: letterComparator,
-//   sortable: true
-
-// },
-//   { field: "discovery_date", headerName: "Discovery Date", sortable: true, comparator: ISODateComparator, sortingOrder: ['asc', 'desc']},
-//   { field: "h_mag", headerName: "H (mag)", comparator: numCompartor, sortable: true, sortingOrder: ['asc', 'desc'],  filter: 'agNumberColumnFilter',},
-//   { field: "moid_au", headerName: "MOID (au)" },
-//   { field: "q_au_1", headerName: "q (au)" },
-//   { field: "q_au_2", headerName: "Q (au)" },
-//   { field: "period_yr", headerName: "Period (yr)" },
-//   { field: "i_deg", headerName: "Inclination (deg)" },
-//   { field: "pha", headerName: "Potentially Hazardous", sortable: true, comparator: letterComparator},
-//   { field: "orbit_class", headerName: "Orbit Class", enableRowGroup: true, comparator: letterComparator, sortable: true, sortingOrder: ['asc', 'desc']},
-// ];
-
 const columnDefs: ColDef[] = [
-  { field: "designation", headerName: "Designation"},
-  { field: "discovery_date", headerName: "Discovery Date"},
-  { field: "h_mag", headerName: "H (mag)"},
-  { field: "moid_au", headerName: "MOID (au)" },
-  { field: "q_au_1", headerName: "q (au)" },
-  { field: "q_au_2", headerName: "Q (au)" },
-  { field: "period_yr", headerName: "Period (yr)" },
-  { field: "i_deg", headerName: "Inclination (deg)" },
-  { field: "pha", headerName: "Potentially Hazardous"},
-  { field: "orbit_class", headerName: "Orbit Class"},
+  { field: "designation", headerName: "Designation", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter'},
+  { field: "discovery_date", headerName: "Discovery Date", sortable: true, comparator: ISODateComparator, filter: 'agTextColumnFilter',},
+  { field: "h_mag", headerName: "H (mag)", comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter',},
+  { field: "moid_au", headerName: "MOID (au)", comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter', },
+  { field: "q_au_1", headerName: "q (au)" , comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter',},
+  { field: "q_au_2", headerName: "Q (au)", comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter',},
+  { field: "period_yr", headerName: "Period (yr)", comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter',},
+  { field: "i_deg", headerName: "Inclination (deg)", comparator: numCompartor, sortable: true,  filter: 'agNumberColumnFilter',},
+  { field: "pha", headerName: "Potentially Hazardous", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter',},
+  { field: "orbit_class", headerName: "Orbit Class", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter',},
 ];
 
+
 const NeoGrid = (): JSX.Element => {
+
+  // eslint-disable-next-line
+  const [cleanData, setCleanData] = useState<any>(data)
+
+
 
   function monthToComparableNumber(date: string) {
     if (date === undefined || date === null || date.length !== 10) {
@@ -120,26 +113,6 @@ const NeoGrid = (): JSX.Element => {
     return yearNumber * 10000 + monthNumber * 100 + dayNumber;
   }
 
-  // const [columnDefs, setColumnDefs] = useState<ColDef[]>(
-  //   [
-  //     { field: "designation", headerName: "Designation",
-  //     comparator: (valueA: any, valueB: any, nodeA:any, nodeB:any, isDescending:any) => {
-  //       if (valueA == valueB) return 0;
-  //       return (valueA > valueB) ? 1 : -1;
-  //     } 
-    
-  //   },
-  //     { field: "discovery_date", headerName: "Discovery Date", comparator: monthToComparableNumber},
-  //     { field: "h_mag", headerName: "H (mag)" },
-  //     { field: "moid_au", headerName: "MOID (au)" },
-  //     { field: "q_au_1", headerName: "q (au)" },
-  //     { field: "q_au_2", headerName: "Q (au)" },
-  //     { field: "period_yr", headerName: "Period (yr)" },
-  //     { field: "i_deg", headerName: "Inclination (deg)" },
-  //     { field: "pha", headerName: "Potentially Hazardous" },
-  //     { field: "orbit_class", headerName: "Orbit Class", enableRowGroup: true, },
-  //   ]
-  // );
 
 
   return (
