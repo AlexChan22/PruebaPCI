@@ -21,28 +21,30 @@ const letterComparator = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDe
 function formatDate(date: string) {
 
   const weekMap = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const monthMap = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October' ,'November', 'December']
 
   var formatted : string = date;
 
   var dateParsed = new Date(date);
 
   var weekDay = weekMap[dateParsed.getDay()];
+  
 
   var day = dateParsed.getUTCDate();
   var month = dateParsed.getMonth();
   var yearNumber = dateParsed.getUTCFullYear();
 
-
+  var monthName = monthMap[month];
   formatted = weekDay;
 
-  return `${weekDay} ${day}/${month}/${yearNumber}`;
+  return `${weekDay} ${day} ${monthName} ${yearNumber}`;
 }
 
 var nicerData = data;
 
-      // for (let i = 0; i < data.length; i++) {
-      //   nicerData[i].discovery_date = formatDate(data[i].discovery_date)
-      // }
+for (let i = 0; i < data.length; i++) {
+    nicerData[i].discovery_date = formatDate(data[i].discovery_date)
+}
 
 
 
@@ -69,6 +71,7 @@ function ISODateComparator(date1: string, date2: string) {
     return date1Parsed.getTime() - date2Parsed.getTime()
     
 }
+
 
 // eg 29/08/2004 gets converted to 20040829
 function monthToComparableNumber(date: string) {
@@ -100,18 +103,6 @@ const NeoGrid = (): JSX.Element => {
 
   // eslint-disable-next-line
   const [cleanData, setCleanData] = useState<any>(data)
-
-
-
-  function monthToComparableNumber(date: string) {
-    if (date === undefined || date === null || date.length !== 10) {
-      return null;
-    }
-    const yearNumber = Number.parseInt(date.substring(6, 10));
-    const monthNumber = Number.parseInt(date.substring(3, 5));
-    const dayNumber = Number.parseInt(date.substring(0, 2));
-    return yearNumber * 10000 + monthNumber * 100 + dayNumber;
-  }
 
 
 
