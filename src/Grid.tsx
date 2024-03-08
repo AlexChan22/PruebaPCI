@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import { AgGridReact } from "ag-grid-react";
-import { ColDef } from "ag-grid-community";
+import { ColDef, ColumnApi, GridApi, GridReadyEvent } from "ag-grid-community";
 import data from "./near-earth-asteroids.json";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -50,20 +50,6 @@ for (let i = 0; i < data.length; i++) {
 
 
 
-function dateComparator(date1: string, date2: string) {
-  const date1Number = monthToComparableNumber(date1);
-  const date2Number = monthToComparableNumber(date2);
-  if (date1Number === null && date2Number === null) {
-    return 0;
-  }
-  if (date1Number === null) {
-    return -1;
-  }
-  if (date2Number === null) {
-    return 1;
-  }
-  return date1Number - date2Number;
-}
 
 function ISODateComparator(date1: string, date2: string) {
     const date1Parsed = new Date(date1);
@@ -76,15 +62,7 @@ function ISODateComparator(date1: string, date2: string) {
 
 
 // eg 29/08/2004 gets converted to 20040829
-function monthToComparableNumber(date: string) {
-  if (date === undefined || date === null || date.length !== 10) {
-    return null;
-  }
-  const yearNumber = Number.parseInt(date.substring(6, 10));
-  const monthNumber = Number.parseInt(date.substring(3, 5));
-  const dayNumber = Number.parseInt(date.substring(0, 2));
-  return yearNumber * 10000 + monthNumber * 100 + dayNumber;
-}
+
 
 
 const columnDefs: ColDef[] = [
@@ -101,12 +79,33 @@ const columnDefs: ColDef[] = [
 ];
 
 
+type AgGridApi = {
+  grid?: GridApi;
+  column?: ColumnApi;
+}
+
 const NeoGrid = (): JSX.Element => {
 
   // eslint-disable-next-line
   const [cleanData, setCleanData] = useState<any>(data)
 
+  const apiRef = React.useRef<AgGridApi>({
+    grid: undefined,
+    column: undefined
+  });
 
+  const onGridReady = (params: GridReadyEvent) => {
+    apiRef.current.grid = params.api;
+    apiRef.current.column = params.columnApi;
+  };
+
+  const clearFilter = () => {
+    apiRef.current.grid?.setFilterModel(null);
+    apiRef.current.grid?.onFilterChanged();
+    apiRef.current.grid?.onFilterChanged();
+    apiRef.current.column?.resetColumnState()
+
+  }
 
   return (
     <div className="ag-theme-alpine" style={{ height: 900, width: 1920 }}>
@@ -114,19 +113,23 @@ const NeoGrid = (): JSX.Element => {
         <div>
           <h1>Near-Earth Object Overview</h1>
         </div>
+        <div>
+        <button onClick={clearFilter}>Clear Filters and Sorting</button>
+        </div>
       </div>
       <AgGridReact
         rowData={data}
         columnDefs={columnDefs}
         rowGroupPanelShow={'always'}
         enableRangeSelection={true}
-        
+        enableRangeHandle={true}
+        suppressMultiRangeSelection={true}
+        onGridReady={onGridReady}
         gridOptions={{
-          rowSelection: 'multiple',
-          enableFillHandle: true,
-          enableRangeSelection: true,
-         
+          
         }}
+
+       
       />
     </div>
   );
