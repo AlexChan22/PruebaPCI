@@ -5,66 +5,33 @@ import data from "./near-earth-asteroids.json";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import React, {useEffect, useState} from "react";
+import { numCompartor, ISODateComparator, letterComparator } from "./Helpers/Comparators";
+import formatDate from "./Helpers/DateFormatter";
+
+//#region Comparators
+// const numCompartor = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
+//    return parseFloat(valueA) - parseFloat(valueB)
+// }
+
+// const letterComparator = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
+//   if (valueA === valueB) return 0;
+//   return (valueA > valueB) ? 1 : -1;
+// }
 
 
-
-const numCompartor = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
-   return parseFloat(valueA) - parseFloat(valueB)
-}
-
-const letterComparator = (valueA: any, valueB: any, nodeA: any, nodeB: any, isDescending: any) => {
-  if (valueA === valueB) return 0;
-  return (valueA > valueB) ? 1 : -1;
-}
+// function ISODateComparator(date1: string, date2: string) {
+//     const date1Parsed = new Date(date1);
+//     const date2Parsed = new Date(date2);
 
 
-function formatDate(date: string) {
-
-  const weekMap = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  const monthMap = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October' ,'November', 'December']
-
-  var formatted : string = date;
-
-  var dateParsed = new Date(date);
-
-  var weekDay = weekMap[dateParsed.getDay()];
-  
-
-  var day = dateParsed.getUTCDate();
-  var month = dateParsed.getMonth();
-  var yearNumber = dateParsed.getUTCFullYear();
-
-  var monthName = monthMap[month];
-  formatted = weekDay;
-
-  return `${weekDay} ${day} ${monthName} ${yearNumber}`;
-}
-
-var nicerData = data;
-
-for (let i = 0; i < data.length; i++) {
-    nicerData[i].discovery_date = formatDate(data[i].discovery_date);
-    nicerData[i].pha = (data[i].pha === 'Y') ? 'Yes' : (data[i].pha === 'N') ? 'No': '' 
-  
-  }
-
-
-
-
-function ISODateComparator(date1: string, date2: string) {
-    const date1Parsed = new Date(date1);
-    const date2Parsed = new Date(date2);
-
-
-    return date1Parsed.getTime() - date2Parsed.getTime()
+//     return date1Parsed.getTime() - date2Parsed.getTime()
     
-}
-
-
-// eg 29/08/2004 gets converted to 20040829
+// }
+//#endregion
 
 
 
+//#region Columns Definition
 const columnDefs: ColDef[] = [
   { field: "designation", headerName: "Designation", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter'},
   { field: "discovery_date", headerName: "Discovery Date", sortable: true, comparator: ISODateComparator, filter: 'agTextColumnFilter',},
@@ -77,18 +44,55 @@ const columnDefs: ColDef[] = [
   { field: "pha", headerName: "Potentially Hazardous", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter',},
   { field: "orbit_class", headerName: "Orbit Class", comparator: letterComparator, sortable: true,   filter: 'agTextColumnFilter',},
 ];
+//#endregion
 
 
+//#region Date Formatting and Data maintenance
+// function formatDate(date: string) {
+
+//   const weekMap = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+//   const monthMap = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October' ,'November', 'December']
+
+//   var formatted : string = date;
+
+//   var dateParsed = new Date(date);
+
+//   var weekDay = weekMap[dateParsed.getDay()];
+  
+
+//   var day = dateParsed.getUTCDate();
+//   var month = dateParsed.getMonth();
+//   var yearNumber = dateParsed.getUTCFullYear();
+
+//   var monthName = monthMap[month];
+//   formatted = weekDay;
+
+//   return `${weekDay} ${day} ${monthName} ${yearNumber}`;
+// }
+
+var nicerData = data;
+
+for (let i = 0; i < data.length; i++) {
+    nicerData[i].discovery_date = formatDate(data[i].discovery_date);
+    nicerData[i].pha = (data[i].pha === 'Y') ? 'Yes' : (data[i].pha === 'N') ? 'No': '' 
+  
+  }
+
+//#endregion
+
+
+//#region Custom Types
 type AgGridApi = {
   grid?: GridApi;
   column?: ColumnApi;
 }
+//#endregion
+
+
 
 const NeoGrid = (): JSX.Element => {
 
-  // eslint-disable-next-line
-  const [cleanData, setCleanData] = useState<any>(data)
-
+  
   const apiRef = React.useRef<AgGridApi>({
     grid: undefined,
     column: undefined
@@ -106,6 +110,7 @@ const NeoGrid = (): JSX.Element => {
     apiRef.current.column?.resetColumnState()
 
   }
+
 
   return (
     <div className="ag-theme-alpine" style={{ height: 900, width: 1920 }}>
