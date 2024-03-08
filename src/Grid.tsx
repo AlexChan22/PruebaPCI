@@ -43,8 +43,10 @@ function formatDate(date: string) {
 var nicerData = data;
 
 for (let i = 0; i < data.length; i++) {
-    nicerData[i].discovery_date = formatDate(data[i].discovery_date)
-}
+    nicerData[i].discovery_date = formatDate(data[i].discovery_date);
+    nicerData[i].pha = (data[i].pha === 'Y') ? 'Yes' : (data[i].pha === 'N') ? 'No': '' 
+  
+  }
 
 
 
